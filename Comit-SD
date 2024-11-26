@@ -1,0 +1,426 @@
+import React, { useState } from 'react'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Button } from "@/components/ui/button"
+import { Progress } from "@/components/ui/progress"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Calendar } from "@/components/ui/calendar"
+import { Badge } from "@/components/ui/badge"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import Image from "next/image"
+import { BarChart2, Users, GraduationCap, Globe, CheckCircle2, Plus, Search, Target, BookOpen, Award } from 'lucide-react'
+
+const committeeMembers = [
+  { name: "Ana Rodríguez", role: "Líder del Proyecto", department: "Desarrollo Organizacional", image: "/placeholder.svg?height=300&width=300" },
+  { name: "Carlos Gómez", role: "Representante", department: "Recursos Humanos", image: "/placeholder.svg?height=300&width=300" },
+  { name: "Laura Martínez", role: "Representante", department: "Reclutamiento", image: "/placeholder.svg?height=300&width=300" },
+  { name: "Miguel Ángel Pérez", role: "Representante", department: "Arquitectura de Procesos", image: "/placeholder.svg?height=300&width=300" },
+  { name: "Sofía Torres", role: "Representante", department: "Universidad Salud Digna", image: "/placeholder.svg?height=300&width=300" },
+  { name: "Javier Ramírez", role: "Representante", department: "Tecnología", image: "/placeholder.svg?height=300&width=300" },
+]
+
+const collaborators = [
+  { 
+    id: 1, 
+    name: "María González", 
+    position: "Coordinadora de Operaciones", 
+    aspiration: "Gerente de Operaciones",
+    progress: 75, 
+    courses: [
+      { name: "Liderazgo Estratégico en Operaciones", progress: 80 },
+      { name: "Gestión de Equipos de Alto Rendimiento", progress: 70 },
+      { name: "Innovación en Procesos de Salud", progress: 60 },
+    ],
+    image: "/placeholder.svg?height=300&width=300"
+  },
+  { 
+    id: 2, 
+    name: "Juan Pérez", 
+    position: "Analista de Recursos Humanos", 
+    aspiration: "Gerente de Recursos Humanos",
+    progress: 60, 
+    courses: [
+      { name: "Desarrollo Organizacional Avanzado", progress: 65 },
+      { name: "Liderazgo y Coaching para RH", progress: 55 },
+      { name: "Estrategias de Atracción de Talento", progress: 50 },
+    ],
+    image: "/placeholder.svg?height=300&width=300"
+  },
+  { 
+    id: 3, 
+    name: "Luisa Fernández", 
+    position: "Líder de Proyecto TI", 
+    aspiration: "Directora de Tecnología",
+    progress: 90, 
+    courses: [
+      { name: "Liderazgo en Transformación Digital", progress: 95 },
+      { name: "Gestión Estratégica de Proyectos TI", progress: 85 },
+      { name: "Innovación Tecnológica en Salud", progress: 80 },
+    ],
+    image: "/placeholder.svg?height=300&width=300"
+  },
+  { 
+    id: 4, 
+    name: "Carlos Ramírez", 
+    position: "Supervisor de Atención al Paciente", 
+    aspiration: "Gerente de Experiencia del Paciente",
+    progress: 70, 
+    courses: [
+      { name: "Liderazgo en Servicio al Cliente", progress: 75 },
+      { name: "Gestión de la Calidad en Servicios de Salud", progress: 65 },
+      { name: "Comunicación Efectiva y Empatía", progress: 60 },
+    ],
+    image: "/placeholder.svg?height=300&width=300"
+  },
+  { 
+    id: 5, 
+    name: "Ana Martínez", 
+    position: "Coordinadora de Marketing", 
+    aspiration: "Gerente de Marketing",
+    progress: 80, 
+    courses: [
+      { name: "Liderazgo en Marketing Digital", progress: 85 },
+      { name: "Estrategias de Comunicación en Salud", progress: 75 },
+      { name: "Análisis de Datos para Toma de Decisiones", progress: 70 },
+    ],
+    image: "/placeholder.svg?height=300&width=300"
+  },
+]
+
+export default function Component() {
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date())
+  const [events, setEvents] = useState([
+    { date: new Date(), title: "Reunión del Comité" },
+    { date: new Date(new Date().setDate(new Date().getDate() + 5)), title: "Lanzamiento Módulo 2 Academia" },
+    { date: new Date(new Date().setDate(new Date().getDate() + 15)), title: "Evaluación Trimestral" },
+  ])
+  const [newEventTitle, setNewEventTitle] = useState("")
+  const [newEventType, setNewEventType] = useState("reunion")
+  const [searchTerm, setSearchTerm] = useState("")
+
+  const addEvent = () => {
+    if (selectedDate && newEventTitle) {
+      setEvents([...events, { date: selectedDate, title: `${newEventTitle} (${newEventType})` }])
+      setNewEventTitle("")
+    }
+  }
+
+  const filteredCollaborators = collaborators.filter(c => 
+    c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    c.position.toLowerCase().includes(searchTerm.toLowerCase())
+  )
+
+  const Logo = () => (
+    <Image
+      src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Salud-Digna-removebg-preview-M6pNWek2QQvYzL6AUx3tqRUFqIxMcx.png"
+      alt="Salud Digna Logo"
+      width={60}
+      height={24}
+      className="h-6 w-auto"
+    />
+  )
+
+  return (
+    <Card className="w-full max-w-6xl mx-auto">
+      <CardHeader className="bg-[#00A651] text-white">
+        <div>
+          <CardTitle className="text-2xl font-bold">Comité Coordinador de Desarrollo de Talento</CardTitle>
+          <CardDescription className="text-white/90">
+            Salud Digna - Programa de Desarrollo de Liderazgo Global
+          </CardDescription>
+        </div>
+      </CardHeader>
+      <CardContent className="p-6">
+        <Tabs defaultValue="overview" className="space-y-4">
+          <TabsList className="bg-[#808285]">
+            <TabsTrigger value="overview" className="text-white data-[state=active]:bg-[#00A651] data-[state=active]:text-white">Resumen</TabsTrigger>
+            <TabsTrigger value="members" className="text-white data-[state=active]:bg-[#00A651] data-[state=active]:text-white">Miembros</TabsTrigger>
+            <TabsTrigger value="collaborators" className="text-white data-[state=active]:bg-[#00A651] data-[state=active]:text-white">Colaboradores</TabsTrigger>
+            <TabsTrigger value="calendar" className="text-white data-[state=active]:bg-[#00A651] data-[state=active]:text-white">Calendario</TabsTrigger>
+          </TabsList>
+          <TabsContent value="overview" className="space-y-4">
+            <div className="flex justify-between items-center mb-6"> {/* Updated class name */}
+              <h2 className="text-2xl font-bold text-[#00A651]">Resumen del Programa</h2>
+              <Image
+                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Salud-Digna-removebg-preview-M6pNWek2QQvYzL6AUx3tqRUFqIxMcx.png"
+                alt="Salud Digna Logo"
+                width={100}
+                height={40}
+                className="h-10 w-auto"
+              />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Card>
+                <CardHeader className="bg-[#00A651] text-white">
+                  <CardTitle className="text-lg font-semibold">Indicadores GRI</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4 pt-4">
+                  <div className="flex justify-between items-center p-2 bg-gray-100 rounded">
+                    <span className="text-sm font-medium">GRI 404-2: Desarrollo de Competencias</span>
+                    <Badge variant="outline" className="bg-green-100 text-green-800">Cumplido</Badge>
+                  </div>
+                  <div className="flex justify-between items-center p-2 bg-gray-100 rounded">
+                    <span className="text-sm font-medium">GRI 404-3: Evaluación de Desempeño</span>
+                    <Badge variant="outline" className="bg-green-100 text-green-800">Cumplido</Badge>
+                  </div>
+                  <div className="flex justify-between items-center p-2 bg-gray-100 rounded">
+                    <span className="text-sm font-medium">GRI 103: Efectividad del Programa</span>
+                    <Badge variant="outline" className="bg-yellow-100 text-yellow-800">En Progreso</Badge>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader className="bg-[#00A651] text-white">
+                  <CardTitle className="text-lg font-semibold">Métricas de Desarrollo</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4 pt-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-[#00A651] text-white p-4 rounded-lg">
+                      <Target className="h-6 w-6 mb-2" />
+                      <h3 className="text-sm font-semibold">Promociones Internas</h3>
+                      <div className="mt-2">
+                        <p className="text-2xl font-bold">85%</p>
+                        <p className="text-xs">Tasa de cobertura interna</p>
+                      </div>
+                    </div>
+                    <div className="bg-[#808285] text-white p-4 rounded-lg">
+                      <BookOpen className="h-6 w-6 mb-2" />
+                      <h3 className="text-sm font-semibold">Horas de Formación</h3>
+                      <div className="mt-2">
+                        <p className="text-2xl font-bold">75%</p>
+                        <p className="text-xs">30h de 40h objetivo</p>
+                      </div>
+                    </div>
+                    <div className="bg-[#808285] text-white p-4 rounded-lg">
+                      <Award className="h-6 w-6 mb-2" />
+                      <h3 className="text-sm font-semibold">Certificaciones</h3>
+                      <div className="mt-2">
+                        <p className="text-2xl font-bold">80%</p>
+                        <p className="text-xs">Tasa de finalización</p>
+                      </div>
+                    </div>
+                    <div className="bg-[#00A651] text-white p-4 rounded-lg">
+                      <Users className="h-6 w-6 mb-2" />
+                      <h3 className="text-sm font-semibold">Retención</h3>
+                      <div className="mt-2">
+                        <p className="text-2xl font-bold">95%</p>
+                        <p className="text-xs">Tasa de retención</p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+            <Card>
+              <CardHeader className="bg-[#00A651] text-white">
+                <CardTitle className="text-lg font-semibold">Progreso del Programa</CardTitle>
+              </CardHeader>
+              <CardContent className="flex flex-wrap justify-around gap-4 pt-4">
+                <div className="text-center">
+                  <BarChart2 className="h-8 w-8 mx-auto text-[#00A651]" />
+                  <p className="mt-2 font-medium">Academia de Liderazgo</p>
+                  <p className="text-sm text-gray-500">75% completado</p>
+                </div>
+                <div className="text-center">
+                  <Globe className="h-8 w-8 mx-auto text-[#808285]" />
+                  <p className="mt-2 font-medium">Navegador Cultural</p>
+                  <p className="text-sm text-gray-500">90% implementado</p>
+                </div>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <div className="text-center cursor-pointer hover:opacity-80">
+                      <Users className="h-8 w-8 mx-auto text-[#00A651]" />
+                      <p className="mt-2 font-medium">Progreso de Colaboradores</p>
+                      <p className="text-sm text-gray-500">75% promedio</p>
+                    </div>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+                    <DialogHeader>
+                      <DialogTitle>Progreso de Colaboradores</DialogTitle>
+                      <DialogDescription>Detalle del progreso individual de los colaboradores</DialogDescription>
+                    </DialogHeader>
+                    <div className="mt-4 space-y-4">
+                      {collaborators.map((collaborator) => (
+                        <Card key={collaborator.id}>
+                          <CardContent className="flex items-center justify-between p-4">
+                            <div className="flex items-center gap-4">
+                              <Avatar className="h-12 w-12">
+                                <AvatarImage src={collaborator.image} />
+                                <AvatarFallback>{collaborator.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                              </Avatar>
+                              <div>
+                                <h3 className="font-semibold">{collaborator.name}</h3>
+                                <p className="text-sm text-gray-500">{collaborator.position}</p>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <p className="font-semibold">{collaborator.progress}%</p>
+                              <Progress value={collaborator.progress} className="w-24" />
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          <TabsContent value="members" className="space-y-4">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-bold text-[#00A651]">Miembros del Comité</h2>
+              <Logo />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {committeeMembers.map((member, index) => (
+              <Card key={index}>
+                <CardContent className="flex items-center gap-4 p-4">
+                  <Avatar className="h-16 w-16">
+                    <AvatarImage src={member.image} alt={member.name} />
+                    <AvatarFallback>{member.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <h3 className="font-semibold">{member.name}</h3>
+                    <p className="text-sm text-gray-500">{member.role}</p>
+                    <Badge className="mt-1 bg-[#00A651] text-white">{member.department}</Badge>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+            </div>
+          </TabsContent>
+          <TabsContent value="collaborators" className="space-y-4">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-bold text-[#00A651]">Colaboradores</h2>
+              <Logo />
+            </div>
+            <div className="mb-4 relative">
+              <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
+              <Input
+                placeholder="Buscar colaboradores..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-8"
+              />
+            </div>
+            <div className="space-y-4">
+              {filteredCollaborators.map((collaborator) => (
+                <Dialog key={collaborator.id}>
+                  <DialogTrigger asChild>
+                    <Card className="cursor-pointer hover:bg-gray-50">
+                      <CardContent className="flex items-center justify-between p-4">
+                        <div className="flex items-center gap-4">
+                          <Avatar className="h-16 w-16">
+                            <AvatarImage src={collaborator.image} alt={collaborator.name} />
+                            <AvatarFallback>{collaborator.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <h3 className="font-semibold">{collaborator.name}</h3>
+                            <p className="text-sm text-gray-500">{collaborator.position}</p>
+                            <p className="text-xs text-[#00A651]">Aspiración: {collaborator.aspiration}</p>
+                          </div>
+                        </div>
+                        <Progress value={collaborator.progress} className="w-24" />
+                      </CardContent>
+                    </Card>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>{collaborator.name}</DialogTitle>
+                      <DialogDescription>{collaborator.position}</DialogDescription>
+                    </DialogHeader>
+                    <div className="mt-4 space-y-4">
+                      <div>
+                        <h4 className="font-semibold mb-2">Progreso General</h4>
+                        <Progress value={collaborator.progress} className="h-2" />
+                        <p className="text-sm text-gray-500 mt-1">{collaborator.progress}% completado</p>
+                      </div>
+                      <div>
+                        <h4 className="font-semibold mb-2">Cursos de Liderazgo</h4>
+                        {collaborator.courses.map((course, index) => (
+                          <div key={index} className="mb-2">
+                            <div className="flex justify-between text-sm">
+                              <span>{course.name}</span>
+                              <span>{course.progress}%</span>
+                            </div>
+                            <Progress value={course.progress} className="h-2 mt-1" />
+                          </div>
+                        ))}
+                      </div>
+                      <div>
+                        <h4 className="font-semibold mb-2">Aspiración de Carrera</h4>
+                        <p>{collaborator.aspiration}</p>
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              ))}
+            </div>
+          </TabsContent>
+          <TabsContent value="calendar" className="space-y-4">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-bold text-[#00A651]">Calendario de Actividades</h2>
+              <Logo />
+            </div>
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex flex-col md:flex-row gap-4">
+                  <div className="flex-1">
+                    <Calendar
+                      mode="single"
+                      selected={selectedDate}
+                      onSelect={setSelectedDate}
+                      className="rounded-md border"
+                    />
+                  </div>
+                  <div className="flex-1 space-y-4">
+                    <div>
+                      <h3 className="font-semibold mb-2">Eventos del día {selectedDate?.toLocaleDateString()}</h3>
+                      <ul className="space-y-2">
+                        {events
+                          .filter(event => event.date.toDateString() === selectedDate?.toDateString())
+                          .map((event, index) => (
+                            <li key={index} className="flex items-center gap-2">
+                              <CheckCircle2 className="h-5 w-5 text-[#00A651]" />
+                              <span>{event.title}</span>
+                            </li>
+                          ))}
+                      </ul>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold mb-2">Añadir Evento</h4>
+                      <div className="space-y-2">
+                        <Input
+                          placeholder="Título del evento"
+                          value={newEventTitle}
+                          onChange={(e) => setNewEventTitle(e.target.value)}
+                        />
+                        <Select value={newEventType} onValueChange={setNewEventType}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Tipo de evento" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="reunion">Reunión</SelectItem>
+                            <SelectItem value="capacitacion">Capacitación</SelectItem>
+                            <SelectItem value="evaluacion">Evaluación</SelectItem>
+                            <SelectItem value="otro">Otro</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <Button onClick={addEvent} className="w-full bg-[#00A651] hover:bg-[#00A651]/90">
+                          <Plus className="h-4 w-4 mr-2" />
+                          Añadir Evento
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </CardContent>
+    </Card>
+  )
+}
